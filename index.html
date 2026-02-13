@@ -139,7 +139,12 @@
         <input type="text" id="memberID" placeholder="เลขประจำตัว" style="width:100%; padding:8px; margin-bottom:8px; border-radius:5px; border:1px solid #ccc;">
         <input type="text" id="memberName" placeholder="ชื่อ-นามสกุล" style="width:100%; padding:8px; margin-bottom:8px; border-radius:5px; border:1px solid #ccc;">
         <input type="text" id="memberClass" placeholder="ชั้น/เลขที่" style="width:100%; padding:8px; margin-bottom:8px; border-radius:5px; border:1px solid #ccc;">
-        
+        <label style="display:block; margin-bottom:5px; font-weight:bold;">เกมที่เล่น:</label>
+<select id="memberGame" style="width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc; background: white;">
+    <option value="Vanguard">Cardfight!! Vanguard</option>
+    <option value="Buddyfight">Future Card Buddyfight</option>
+</select>
+
         <label>รูปประจำตัว:</label>
         <input type="file" id="memberImg" accept="image/*" style="margin-bottom:8px;">
         
@@ -304,6 +309,7 @@ async function registerMember() {
         name: document.getElementById('memberName').value,
         class: document.getElementById('memberClass').value,
         deck: document.getElementById('mainDeck').value,
+        game: document.getElementById('memberGame').value, 
         memberPhoto: await toBase64(document.getElementById('memberImg')),
         deckPhoto: await toBase64(document.getElementById('deckImg'))
     };
