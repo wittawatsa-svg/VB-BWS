@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Game Club Manager</title>
+    <!-- นำเข้าฟอนต์ Kanit จาก Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --vanguard: #2563eb;
+            --buddyfight: #dc2626;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kanit', sans-serif; }
+
+        body { background-color: var(--bg); color: var(--text); }
+
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: white;
+            position: relative;
+            padding-bottom: 80px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        /* --- Page Management --- */
+        .page { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Home Section --- */
+        .welcome-header {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+        }
+        .logo-circle {
+            width: 100px; height: 100px; background: var(--primary);
+            border-radius: 25px; margin: 0 auto 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 50px; box-shadow: 0 10px 15px rgba(79, 70, 229, 0.2);
+        }
+        
+        .game-selector-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; padding: 20px;
+        }
+        .game-card {
+            padding: 25px 15px; border-radius: 20px; text-align: center;
+            color: white; cursor: pointer; transition: 0.2s;
+        }
+        .game-card:active { transform: scale(0.95); }
+        .vanguard-bg { background: linear-gradient(135deg, #1e40af, #3b82f6); }
+        .buddyfight-bg { background: linear-gradient(135deg, #991b1b, #ef4444); }
+        .card-icon { font-size: 32px; margin-bottom: 8px; }
+
+        /* --- Form Elements --- */
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        input, select {
+            width: 100%; padding: 12px; border: 1px solid #e2e8f0;
+            border-radius: 10px; margin-bottom: 10px; font-size: 16px;
+        }
+        .btn-submit {
+            width: 100%; padding: 14px; background: var(--primary);
+            color: white; border: none; border-radius: 10px;
+            font-weight: 600; cursor: pointer;
+        }
+
+        /* --- Bottom Navigation --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; max-width: 500px;
+            height: 75px; background: white; display: flex;
+            justify-content: space-around; align-items: center;
+            border-top: 1px solid #f1f5f9; z-index: 100;
+        }
+        .nav-item {
+            border: none; background: none; flex: 1;
+            display: flex; flex-direction: column; align-items: center;
+            color: #94a3b8; cursor: pointer;
+        }
+        .nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 20px; margin-bottom: 4px; }
+        .nav-label { font-size: 10px; font-weight: 500; }
+
+        /* --- History List --- */
+        .match-card {
+            background: #f8fafc; padding: 15px; border-radius: 12px;
+            margin-bottom: 10px; border-left: 5px solid #cbd5e1;
+        }
+        .match-card.vg { border-color: var(--vanguard); }
+        .match-card.bf { border-color: var(--buddyfight); }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <!-- 1. หน้าแรก (Home) -->
+    <section id="home" class="page active">
+        <div class="welcome-header">
+            <div class="logo-circle">🃏</div>
+            <h1>Card Game Club</h1>
+            <p>ระบบบันทึกผลการแข่งขันในชุมนุม</p>
+        </div>
+        <div class="game-selector-grid">
+            <div class="game-card vanguard-bg" onclick="quickRecord('Vanguard')">
+                <div class="card-icon">🌀</div>
+                <strong>Vanguard</strong>
+                <div style="font-size: 10px; opacity:0.8">แตะเพื่อบันทึกผล</div>
+            </div>
+            <div class="game-card buddyfight-bg" onclick="quickRecord('Buddyfight')">
+                <div class="card-icon">🔥</div>
+                <strong>Buddyfight</strong>
+                <div style="font-size: 10px; opacity:0.8">แตะเพื่อบันทึกผล</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. หน้าสมาชิก (Members) -->
+    <section id="members" class="page">
+        <h2>👥 สมาชิกในชุมนุม</h2>
+        <p style="color:gray; margin-top:20px;">ส่วนจัดการรายชื่อสมาชิก (เร็วๆ นี้)</p>
+    </section>
+
+    <!-- 3. หน้าบันทึกผล (Record) -->
+    <section id="record" class="page">
+        <h2>📝 บันทึกผลการแข่งขัน</h2>
+        <div style="margin-top:20px;">
+            <label>ประเภทเกม</label>
+            <select id="gameType">
+                <option value="Vanguard">Cardfight!! Vanguard</option>
+                <option value="Buddyfight">Future Card Buddyfight</option>
+            </select>
+            
+            <label>ชื่อผู้ชนะ</label>
+            <input type="text" id="winnerName" placeholder="ระบุชื่อผู้ชนะ">
+            
+            <label>ชื่อผู้แพ้</label>
+            <input type="text" id="loserName" placeholder="ระบุชื่อผู้แพ้">
+            
+            <button class="btn-submit" onclick="saveMatch()">บันทึกข้อมูล</button>
+        </div>
+    </section>
+
+    <!-- 4. หน้าประวัติ (History) -->
+    <section id="history" class="page">
+        <h2>📜 ประวัติการแข่งขัน</h2>
+        <div id="historyList" style="margin-top:20px;">
+            <!-- ข้อมูลจาก JS จะมาโชว์ที่นี่ -->
+        </div>
+    </section>
+
+    <!-- 5. หน้าอันดับ (Ranking) -->
+    <section id="ranking" class="page">
+        <h2>📊 ตารางอันดับ</h2>
+        <p style="color:gray; margin-top:20px;">สรุปคะแนนประจำสัปดาห์ (เร็วๆ นี้)</p>
+    </section>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="navTo('home', this)">
+            <span class="nav-icon">🏠</span><span class="nav-label">หน้าแรก</span>
+        </button>
+        <button class="nav-item" onclick="navTo('members', this)">
+            <span class="nav-icon">👤</span><span class="nav-label">สมาชิก</span>
+        </button>
+        <button class="nav-item" onclick="navTo('record', this)">
+            <span class="nav-icon">📝</span><span class="nav-label">บันทึกผล</span>
+        </button>
+        <button class="nav-item" onclick="navTo('history', this)">
+            <span class="nav-icon">📜</span><span class="nav-label">ประวัติ</span>
+        </button>
+        <button class="nav-item" onclick="navTo('ranking', this)">
+            <span class="nav-icon">📊</span><span class="nav-label">อันดับ</span>
+        </button>
+    </nav>
+
+</div>
+
+<script>
+    // --- ระบบเปลี่ยนหน้า ---
+    function navTo(pageId, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        
+        if(pageId === 'history') renderHistory();
+    }
+
+    // --- ทางลัดจากหน้าแรก ---
+    function quickRecord(type) {
+        document.getElementById('gameType').value = type;
+        navTo('record');
+    }
+
+    // --- ระบบบันทึกข้อมูล ---
+    function saveMatch() {
+        const game = document.getElementById('gameType').value;
+        const win = document.getElementById('winnerName').value;
+        const lose = document.getElementById('loserName').value;
+
+        if(!win || !lose) return alert("กรุณากรอกชื่อให้ครบ");
+
+        const match = {
+            id: Date.now(),
+            game: game,
+            winner: win,
+            loser: lose,
+            date: new Date().toLocaleString('th-TH')
+        };
+
+        let data = JSON.parse(localStorage.getItem('club_matches') || '[]');
+        data.unshift(match);
+        localStorage.setItem('club_matches', JSON.stringify(data));
+
+        alert("บันทึกสำเร็จ!");
+        document.getElementById('winnerName').value = '';
+        document.getElementById('loserName').value = '';
+        navTo('history');
+    }
+
+    // --- แสดงประวัติ ---
+    function renderHistory() {
+        const list = document.getElementById('historyList');
+        const data = JSON.parse(localStorage.getItem('club_matches') || '[]');
+        
+        if(data.length === 0) {
+            list.innerHTML = "<p>ยังไม่มีประวัติการแข่ง</p>";
+            return;
+        }
+
+        list.innerHTML = data.map(m => `
+            <div class="match-card ${m.game === 'Vanguard' ? 'vg' : 'bf'}">
+                <strong>${m.game}</strong><br>
+                <span style="color:green">WIN: ${m.winner}</span> vs <span>${m.loser}</span>
+                <div style="font-size:10px; color:gray; margin-top:5px;">${m.date}</div>
+            </div>
+        `).join('');
+    }
+</script>
+
+</body>
+</html>
