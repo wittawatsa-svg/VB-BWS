@@ -128,10 +128,34 @@
     </section>
 
     <!-- 2. หน้าสมาชิก (Members) -->
-    <section id="members" class="page">
-        <h2>👥 สมาชิกในชุมนุม</h2>
-        <p style="color:gray; margin-top:20px;">ส่วนจัดการรายชื่อสมาชิก (เร็วๆ นี้)</p>
-    </section>
+   <section id="members" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>👥 สมาชิกชุมนุม</h2>
+        <button onclick="document.getElementById('memberForm').style.display='block'" style="padding:5px 10px; border-radius:8px; background:var(--primary); color:white; border:none;">+ สมัคร</button>
+    </div>
+
+    <!-- ฟอร์มสมัครสมาชิก -->
+    <div id="memberForm" style="display:none; background:#f1f5f9; padding:15px; border-radius:15px; margin-top:15px;">
+        <input type="text" id="memberID" placeholder="เลขประจำตัว" style="width:100%; padding:8px; margin-bottom:8px; border-radius:5px; border:1px solid #ccc;">
+        <input type="text" id="memberName" placeholder="ชื่อ-นามสกุล" style="width:100%; padding:8px; margin-bottom:8px; border-radius:5px; border:1px solid #ccc;">
+        <input type="text" id="memberClass" placeholder="ชั้น/เลขที่" style="width:100%; padding:8px; margin-bottom:8px; border-radius:5px; border:1px solid #ccc;">
+        
+        <label>รูปประจำตัว:</label>
+        <input type="file" id="memberImg" accept="image/*" style="margin-bottom:8px;">
+        
+        <input type="text" id="mainDeck" placeholder="ชื่อ Deck ที่เล่น" style="width:100%; padding:8px; margin-bottom:8px; border-radius:5px; border:1px solid #ccc;">
+        
+        <label>รูป Deck:</label>
+        <input type="file" id="deckImg" accept="image/*" style="margin-bottom:15px;">
+        
+        <button onclick="registerMember()" style="width:100%; padding:10px; background:green; color:white; border:none; border-radius:8px;">ยืนยันสมัครสมาชิก</button>
+        <button onclick="document.getElementById('memberForm').style.display='none'" style="width:100%; padding:5px; background:gray; color:white; border:none; border-radius:8px; margin-top:5px;">ยกเลิก</button>
+    </div>
+
+    <div id="memberList" style="margin-top:20px;">
+        <!-- รายชื่อสมาชิกจะแสดงที่นี่ -->
+    </div>
+</section>
 
     <!-- 3. หน้าบันทึกผล (Record) -->
     <section id="record" class="page">
@@ -250,6 +274,44 @@
             </div>
         `).join('');
     }
+    // ฟังก์ชันแปลงรูปเป็นข้อความเพื่อส่งเข้า Google Sheets
+async function toBase64(fileInput) {
+    const file = fileInput.files[0];
+    if (!file) return "";
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
+// ฟังก์ชันส่งข้อมูลสมาชิกไป Google Sheets
+async function registerMember() {
+    const scriptURL = 'ใส่_URL_APPS_SCRIPT_ของคุณตรงนี้';
+    
+    // เตรียมข้อมูล
+    const data = {
+        type: 'member',
+        id: document.getElementById('memberID').value,
+        name: document.getElementById('memberName').value,
+        class: document.getElementById('memberClass').value,
+        deck: document.getElementById('mainDeck').value,
+        memberPhoto: await toBase64(document.getElementById('memberImg')),
+        deckPhoto: await toBase64(document.getElementById('deckImg'))
+    };
+
+    if(!data.name) return alert("กรุณาใส่ชื่อ");
+
+    try {
+        await fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) });
+        alert("สมัครสมาชิกสำเร็จและบันทึกลง Google Sheets แล้ว!");
+        location.reload(); // รีโหลดหน้าเพื่ออัปเดตข้อมูล
+    } catch (e) {
+        alert("บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่อ");
+    }
+}
+
 </script>
 
 </body>
