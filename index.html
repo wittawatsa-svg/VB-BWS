@@ -214,15 +214,22 @@
 
 <script>
     // --- ระบบเปลี่ยนหน้า ---
-    function navTo(pageId, btn) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        if(btn) btn.classList.add('active');
-        
-        if(pageId === 'history') renderHistory();
+function navTo(pageId, btn) {
+    // ซ่อนทุกหน้า
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    // แสดงหน้าปัจจุบัน
+    document.getElementById(pageId).classList.add('active');
+    
+    // เปลี่ยนสีปุ่มเมนู
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    
+    // 🔥 เงื่อนไขสำคัญ: ถ้าเข้าหน้า members ให้โหลดข้อมูลจาก Google Sheets ทันที
+    if(pageId === 'members') {
+        loadMembers();
     }
+}
+
 
     // --- ทางลัดจากหน้าแรก ---
     function quickRecord(type) {
@@ -310,6 +317,53 @@ async function registerMember() {
     } catch (e) {
         alert("บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่อ");
     }
+}
+// ฟังก์ชันดึงข้อมูลสมาชิกจาก Google Sheets มาแสดงผล
+async function loadMembers() {
+    const list = document.getElementById('memberList');
+    list.innerHTML = "<p style='text-align:center; padding:20px;'>กำลังโหลดรายชื่อสมาชิก...</p>";
+
+    try {
+        // เรียกไปยัง App Script โดยระบุ target=members
+        const response = await fetch(scriptURL + "?target=members");
+        const members = await response.json();
+        
+        if (!members || members.length === 0) {
+            list.innerHTML = "<p style='text-align:center; padding:20px;'>ยังไม่มีสมาชิกลงทะเบียน</p>";
+            return;
+        }
+
+        // สร้าง HTML สำหรับบัตรสมาชิกแต่ละคน
+        list.innerHTML = members.map(m => `
+            <div class="member-item" style="background:white; padding:15px; border-radius:15px; margin-bottom:12px; display:flex; gap:15px; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.05); border:1px solid #f1f5f9;">
+                <img src="${m.memberPhoto || 'https://via.placeholder.com'}" 
+                     style="width:65px; height:65px; border-radius:50%; object-fit:cover; border:2px solid var(--primary);">
+                <div class="member-info" style="flex:1;">
+                    <strong style="font-size:16px; color:#1e293b;">${m.name}</strong>
+                    <div style="font-size:12px; color:#64748b;">ชั้น ${m.class} | เลขที่ ${m.no}</div>
+                    <div style="font-size:13px; color:var(--primary); margin-top:4px;">🎴 Deck: ${m.deck || '-'}</div>
+                    <div style="margin-top:6px;">
+                        <span style="font-size:10px; padding:3px 8px; background:#e0e7ff; color:#4338ca; border-radius:20px; font-weight:600;">
+                            ${m.game}
+                        </span>
+                    </div>
+                </div>
+                <div class="deck-preview" onclick="viewDeck('${m.deckPhoto}')" style="cursor:pointer;">
+                    <span style="font-size:20px;">🃏</span>
+                </div>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.error(e);
+        list.innerHTML = "<p style='text-align:center; color:red; padding:20px;'>เกิดข้อผิดพลาดในการโหลดข้อมูล</p>";
+    }
+}
+
+// ฟังก์ชันเสริมสำหรับดูรูป Deck (ถ้ามี)
+function viewDeck(photoUrl) {
+    if(!photoUrl || photoUrl === 'undefined') return alert("สมาชิกท่านนี้ไม่ได้ลงรูป Deck ไว้");
+    const newTab = window.open();
+    newTab.document.write(`<img src="${photoUrl}" style="max-width:100%;">`);
 }
 
 </script>
