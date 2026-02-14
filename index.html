@@ -371,7 +371,64 @@ function viewDeck(photoUrl) {
     const newTab = window.open();
     newTab.document.write(`<img src="${photoUrl}" style="max-width:100%;">`);
 }
+function registerMember() {
+        // 1. ดึงข้อมูลจากช่องกรอก
+        const id = document.getElementById('memberID').value;
+        const name = document.getElementById('memberName').value;
+        const mClass = document.getElementById('memberClass').value;
+        const game = document.getElementById('memberGame').value;
+        const deck = document.getElementById('mainDeck').value;
 
+        // เช็คว่ากรอกชื่อหรือยัง
+        if (name.trim() === "") {
+            alert("กรุณากรอกชื่อ-นามสกุลด้วยครับ");
+            return;
+        }
+
+        // 2. สร้าง "การ์ดรายชื่อ" เพื่อไปแสดงในหน้าสมาชิก
+        const memberList = document.getElementById('memberList');
+        const newCard = document.createElement('div');
+        
+        // ใส่สไตล์ให้การ์ด (เลือกสีตามเกมที่เล่น)
+        const accentColor = (game === "Vanguard") ? "#2563eb" : "#dc2626";
+        
+        newCard.style = `
+            background: white; 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 10px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 6px solid ${accentColor};
+        `;
+
+        newCard.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin:0; font-size:18px;">${name}</h3>
+                    <p style="margin:0; font-size:14px; color:#64748b;">ID: ${id} | ชั้น: ${mClass}</p>
+                    <span style="display:inline-block; margin-top:5px; padding:2px 8px; background:#f1f5f9; border-radius:15px; font-size:12px;">
+                        🎮 ${game}
+                    </span>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:12px; color:#94a3b8;">Deck ที่เล่น</div>
+                    <div style="font-weight:bold; color:${accentColor};">${deck}</div>
+                </div>
+            </div>
+        `;
+
+        // 3. เอาการ์ดใหม่ไปแปะไว้บนสุดของรายการ
+        memberList.prepend(newCard);
+
+        // 4. เคลียร์ค่าในฟอร์มให้ว่าง และปิดหน้าต่างสมัคร
+        document.getElementById('memberID').value = "";
+        document.getElementById('memberName').value = "";
+        document.getElementById('memberClass').value = "";
+        document.getElementById('mainDeck').value = "";
+        document.getElementById('memberForm').style.display = 'none';
+
+        alert("เพิ่มรายชื่อสำเร็จแล้ว!");
+    }
 </script>
 
 </body>
