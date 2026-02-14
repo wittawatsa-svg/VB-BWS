@@ -300,28 +300,31 @@ async function toBase64(fileInput) {
 
 // ฟังก์ชันส่งข้อมูลสมาชิกไป Google Sheets
 async function registerMember() {
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyjuVDHD5bsxPB1zHPkFo_le-vRpqa9RB6S7MvqoVaGHuWoDqtq7LdNLYnopmD6wBwwEQ/exec';
-    
-    // เตรียมข้อมูล
-    const data = {
-        type: 'member',
+    const btn = event.target;
+    btn.disabled = true;
+
+    // ดึงค่าจาก HTML input
+    const memberData = {
+        type: 'member', // *** สำคัญมาก: ต้องมีเพื่อให้เข้าเงื่อนไข if ใน Apps Script
         id: document.getElementById('memberID').value,
         name: document.getElementById('memberName').value,
-        class: document.getElementById('memberClass').value,
-        deck: document.getElementById('mainDeck').value,
-        game: document.getElementById('memberGame').value, 
-        memberPhoto: await toBase64(document.getElementById('memberImg')),
-        deckPhoto: await toBase64(document.getElementById('deckImg'))
+        class: document.getElementById('memberClass').value, // ให้ตรงกับหัวตาราง
+        no: "1", // หรือดึงจาก input ถ้ามี
+        game: document.getElementById('memberGame').value,
+        deck: document.getElementById('mainDeck').value
     };
 
-    if(!data.name) return alert("กรุณาใส่ชื่อ");
-
     try {
-        await fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) });
-        alert("สมัครสมาชิกสำเร็จและบันทึกลง Google Sheets แล้ว!");
-        location.reload(); // รีโหลดหน้าเพื่ออัปเดตข้อมูล
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(memberData)
+        });
+        alert("บันทึกสำเร็จ!");
+        loadMembers(); // โหลดรายชื่อใหม่มาแสดง
     } catch (e) {
-        alert("บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่อ");
+        alert("บันทึกไม่สำเร็จ: " + e);
+    } finally {
+        btn.disabled = false;
     }
 }
 // ฟังก์ชันดึงข้อมูลสมาชิกจาก Google Sheets มาแสดงผล
