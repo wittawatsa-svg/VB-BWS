@@ -429,6 +429,60 @@ function registerMember() {
 
         alert("เพิ่มรายชื่อสำเร็จแล้ว!");
     }
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjuVDHD5bsxPB1zHPkFo_le-vRpqa9RB6S7MvqoVaGHuWoDqtq7LdNLYnopmD6wBwwEQ/exec";
+
+async function loadMembers() {
+    const memberList = document.getElementById('memberList');
+    memberList.innerHTML = '<p style="text-align:center;">กำลังโหลดรายชื่อสมาชิก...</p>';
+
+    try {
+        const response = await fetch(SCRIPT_URL);
+        const data = await response.json();
+        memberList.innerHTML = ''; 
+
+        data.forEach(row => {
+            // อิงตามคอลัมน์ใน Sheets: 0=id, 1=name, 2=class, 4=game, 5=deck
+            const id = row[0];
+            const name = row[1];
+            const mClass = row[2];
+            const game = row[4];
+            const deck = row[5];
+
+            const card = document.createElement('div');
+            // เลือกสีแถบตามชื่อเกม
+            const accentColor = (game === "Vanguard") ? "#2563eb" : "#dc2626";
+
+            card.style = `
+                background: white; padding: 15px; border-radius: 12px; 
+                margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border-left: 6px solid ${accentColor};
+            `;
+
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="margin:0; font-size:18px;">${name}</h3>
+                        <p style="margin:0; font-size:13px; color:#64748b;">ID: ${id} | ชั้น: ${mClass}</p>
+                        <span style="display:inline-block; margin-top:5px; padding:2px 8px; background:#f1f5f9; border-radius:15px; font-size:11px;">
+                            🎮 ${game}
+                        </span>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:11px; color:#94a3b8;">Deck</div>
+                        <div style="font-weight:bold; color:${accentColor};">${deck}</div>
+                    </div>
+                </div>
+            `;
+            memberList.appendChild(card);
+        });
+    } catch (error) {
+        memberList.innerHTML = '<p style="color:red; text-align:center;">ไม่สามารถดึงข้อมูลได้</p>';
+    }
+}
+
+// สั่งให้โหลดข้อมูลทันทีที่เปิดหน้าเว็บ
+window.onload = loadMembers;
+
 </script>
 
 </body>
