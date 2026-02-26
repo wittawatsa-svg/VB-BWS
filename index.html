@@ -5,32 +5,187 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vanguard & Buddy Club</title>
     
-    <!-- 1. วางโค้ดจากช่อง CSS ใน CodePen ตรงนี้ -->
-    <style>
-        body { font-family: 'Kanit', sans-serif; margin: 0; padding-bottom: 70px; background: #f0f2f5; }
-.page { display: none; padding: 20px; }
-.page.active { display: block; }
-.bottom-nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
-.bottom-nav button { flex: 1; border: none; background: none; padding: 10px; font-size: 12px; display: flex; flex-direction: column; align-items: center; }
-.bottom-nav button:hover { background: #e7f3ff; }
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.member-card { background: white; padding: 10px; border-radius: 8px; text-align: center; }
-.member-card img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
-input, select, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ddd; }
-button { background: #007bff; color: white; cursor: pointer; border: none; }
+    <!-- ดึง Font ให้แสดงผลภาษาไทยสวยๆ บนมือถือ -->
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
 
-        body { font-family: 'Kanit', sans-serif; ... }
-        .bottom-nav { ... }
+    <style>
+      /* --- ใส่โค้ด CSS ใหม่ตรงนี้ --- */
+      * { box-sizing: border-box; }
+      body { 
+        font-family: 'Kanit', sans-serif; 
+        margin: 0; 
+        padding-bottom: 90px; 
+        background: #f8f9fa; 
+        color: #2d3436;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .page { 
+        display: none; 
+        padding: 20px 15px; 
+        max-width: 500px; 
+        margin: 0 auto; 
+        animation: fadeIn 0.3s ease-out;
+      }
+      .page.active { display: block; }
+
+      .grid { 
+        display: grid; 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 12px; 
+      }
+.member-card { 
+    background: #ffffff; 
+    padding: 18px 12px; 
+    border-radius: 20px; 
+    text-align: center; 
+    box-shadow: 0 6px 15px rgba(0,0,0,0.06); 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 170px;
+    position: relative;
+    border: 2px solid transparent; /* เตรียมไว้ใส่สีตามเกม */
+    transition: 0.3s;
+}
+
+/* สีสำหรับการ์ด Vanguard (เน้นโทนน้ำเงิน) */
+.card-vanguard { 
+    border-color: #007bff; 
+    background: linear-gradient(180deg, #ffffff 70%, #e7f3ff 100%);
+}
+.card-vanguard img { border: 3px solid #007bff; }
+.card-vanguard .badge { background: #007bff; color: white; }
+
+/* สีสำหรับการ์ด Buddyfight (เน้นโทนแดง/ทอง) */
+.card-buddy { 
+    border-color: #ff4757; 
+    background: linear-gradient(180deg, #ffffff 70%, #fff1f2 100%);
+}
+.card-buddy img { border: 3px solid #ff4757; }
+.card-buddy .badge { background: #ff4757; color: white; }
+
+/* สไตล์ตัวหนังสือและป้ายกำกับ */
+.member-card img { 
+    width: 75px; height: 75px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    margin-bottom: 12px;
+    background: #eee;
+}
+.member-card b { font-size: 16px; color: #2d3436; display: block; margin-bottom: 5px; }
+.member-card .deck-name { font-size: 12px; color: #636e72; margin-bottom: 8px; }
+.member-card .badge { 
+    font-size: 10px; 
+    padding: 2px 10px; 
+    border-radius: 20px; 
+    font-weight: 600; 
+    text-transform: uppercase;
+}
+.member-card small { 
+    font-size: 12px;
+    color: #636e72;
+    background: #f1f2f6; /* ใส่พื้นหลังอ่อนๆ ให้ชื่อเด็ค */
+    padding: 2px 8px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+      input, select, button { 
+        width: 100%; 
+        padding: 14px; 
+        margin: 8px 0; 
+        border-radius: 12px; 
+        border: 1px solid #e2e8f0; 
+        font-size: 16px; 
+        outline: none;
+      }
+
+      button[type="submit"] { 
+        background: #007bff; 
+        color: white; 
+        font-weight: 600; 
+        border: none; 
+        margin-top: 15px;
+        cursor: pointer;
+      }
+
+      .bottom-nav { 
+        position: fixed; 
+        bottom: 0; 
+        width: 100%; 
+        background: #ffffff; 
+        display: flex; 
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.08); 
+        padding-bottom: env(safe-area-inset-bottom);
+        z-index: 1000;
+      }
+      .bottom-nav button { 
+        flex: 1; 
+        border: none; 
+        background: none; 
+        padding: 12px 5px; 
+        font-size: 10px; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        color: #a0aec0;
+        margin: 0;
+      }
+      .bottom-nav button span { margin-top: 4px; font-weight: 500; }
+
+      table { 
+        width: 100%; 
+        border-collapse: separate; 
+        border-spacing: 0; 
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      th { background: #007bff; color: white; padding: 12px; }
+      td { padding: 12px; text-align: center; border-bottom: 1px solid #f1f5f9; }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+/* ก๊อบปี้ส่วนนี้ไปวางใน <style> */
+.home-banner {
+  width: 90%;
+  max-width: 350px;
+  margin: 20px auto; /* จัดกึ่งกลางแนวนอน */
+  background: white;
+  padding: 10px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.home-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 15px;
+}
+
     </style>
 </head>
+
 <body>
 <div id="app">
   <!-- ส่วนแสดงเนื้อหา (จะเปลี่ยนไปตามเมนู) -->
   <main id="content">
-    <div id="home" class="page active">
-      <h1>🎴 Vanguard & Buddy Club</h1>
-      <p>ยินดีต้อนรับสู่ระบบบันทึกคะแนนชุมนุม</p>
-    </div>
+    <div id="home" class="page active" style="text-align: center; padding-top: 40px;">
+  <!-- ข้อความต้อนรับอยู่ด้านบน -->
+  <h1 style="font-size: 26px; color: #333; margin-bottom: 5px;">🎴 Vanguard & Buddy Club</h1>
+  <p style="font-size: 16px; color: #666;">ยินดีต้อนรับสู่ระบบบันทึกคะแนนชุมนุม</p>
+
+  <!-- รูปภาพอยู่ด้านล่างข้อความ และจัดกึ่งกลาง -->
+  <div class="home-banner">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvsCNJnzqcZ2nMCwWyj1HH3xwRhanhIEPfnw&s" alt="Club Banner">
+  </div>
+
+  <p style="margin-top: 25px; color: #aaa; font-size: 14px;">เลือกเมนูด้านล่างเพื่อเริ่มต้น ⚔️</p>
+</div>
 
     <!-- หน้าสมาชิก + ฟอร์มสมัคร -->
     <div id="members" class="page">
@@ -115,13 +270,34 @@ async function loadData() {
       winSelect.innerHTML = '';
       loseSelect.innerHTML = '';
       
-      data.members.forEach(m => {
-        // [6] คือรูปโปรไฟล์, [1] คือชื่อ, [5] คือชื่อเด็ค
-        memberList.innerHTML += `<div class="member-card"><img src="${m[6] || 'https://via.placeholder.com'}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;"><b>${m[1]}</b><br><small>${m[5]}</small></div>`;
-        let opt = `<option value="${m[1]}">${m[1]}</option>`;
+             data.members.forEach(m => {
+        // อ้างอิง Index ตามรูป Sheet ที่ส่งมา
+        const name = m[1];
+        const grade = m[2];      // คอลัมน์ C (Index 2)
+        const gameType = m[4];   // คอลัมน์ E (Index 4)
+        const deckName = m[5];   // คอลัมน์ F (Index 5)
+        const profileImg = m[6] || 'https://via.placeholder.com'; // คอลัมน์ G (Index 6)
+
+        // เช็คสีตามเกม (Vanguard/Buddyfight)
+        const gameClass = (gameType === 'Vanguard') ? 'card-vanguard' : 'card-buddy';
+        const gameLabel = (gameType === 'Vanguard') ? 'VG' : 'BF';
+
+        memberList.innerHTML += `
+          <div class="member-card ${gameClass}">
+            <img src="${profileImg}" style="width:65px;height:65px;border-radius:50%;object-fit:cover;">
+            <b>${name}</b>
+            <div style="font-size: 12px; margin-top: 5px;">
+              <span style="color: #007bff; font-weight: bold;">[${grade}]</span> ${deckName}
+            </div>
+            <span class="badge">${gameLabel}</span>
+          </div>`;
+          
+        let opt = `<option value="${name}">${name}</option>`;
         winSelect.innerHTML += opt;
         loseSelect.innerHTML += opt;
       });
+
+
     }
 
     updateLeaderboard(data.matches);
@@ -261,4 +437,3 @@ loadData();
     </script>
 </body>
 </html>
-
