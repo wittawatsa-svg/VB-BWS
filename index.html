@@ -154,10 +154,21 @@
   width: 90%;
   max-width: 350px;
   margin: 20px auto; /* จัดกึ่งกลางแนวนอน */
-  background: white;
-  padding: 10px;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+     
+    /* แก้ไขบรรทัดนี้: ใส่ URL รูปที่ต้องการ */
+    background-image: url('https://cms.dmpcdn.com/moviearticle/2022/12/02/355fb770-7232-11ed-af87-33577e5a27b1_webp_original.jpg'); 
+    
+    /* เพิ่ม 3 บรรทัดนี้เพื่อให้รูปแสดงสวยงาม */
+    background-size: cover;      /* ให้รูปขยายเต็มพื้นที่กล่อง */
+    background-position: center; /* จัดรูปให้อยู่ตรงกลางกล่อง */
+    background-repeat: no-repeat;/* ไม่ให้รูปแสดงซ้ำ */
+    
+    padding: 10px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    
+    /* หากในกล่องไม่มีข้อความเลย ต้องกำหนดความสูงด้วยเพื่อให้เห็นรูป */
+    min-height: 200px; 
 }
 
 .home-banner img {
