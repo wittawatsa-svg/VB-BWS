@@ -151,24 +151,26 @@
       }
 /* ก๊อบปี้ส่วนนี้ไปวางใน <style> */
 .home-banner {
-  width: 90%;
-  max-width: 350px;
-  margin: 20px auto; /* จัดกึ่งกลางแนวนอน */
-     
-    /* แก้ไขบรรทัดนี้: ใส่ URL รูปที่ต้องการ */
-    background-image: url('https://cms.dmpcdn.com/moviearticle/2022/12/02/355fb770-7232-11ed-af87-33577e5a27b1_webp_original.jpg'); 
+    /* ทำให้ภาพอยู่กับที่และเต็มจอ */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* สำคัญ: เพื่อให้รูปไปอยู่ "ข้างหลัง" ข้อความ */
+
+    /* ใส่รูปและปรับการแสดงผล */
+    background-image: url('https://cms.dmpcdn.com/moviearticle/2022/12/02/355fb770-7232-11ed-af87-33577e5a27b1_webp_original.jpg');
+    background-size: cover;      /* ให้รูปขยายเต็มพื้นที่จอ */
+    background-position: center; /* จัดให้กลางรูปอยู่กลางจอ */
     
-    /* เพิ่ม 3 บรรทัดนี้เพื่อให้รูปแสดงสวยงาม */
-    background-size: cover;      /* ให้รูปขยายเต็มพื้นที่กล่อง */
-    background-position: center; /* จัดรูปให้อยู่ตรงกลางกล่อง */
-    background-repeat: no-repeat;/* ไม่ให้รูปแสดงซ้ำ */
+    /* ปรับความจาง */
+    opacity: 0.2; /* ยิ่งน้อยยิ่งจาง (0.1 - 1.0) */
     
-    padding: 10px;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    
-    /* หากในกล่องไม่มีข้อความเลย ต้องกำหนดความสูงด้วยเพื่อให้เห็นรูป */
-    min-height: 200px; 
+    /* ลบค่าเดิมที่เคยทำให้เป็นกล่องเล็กๆ ออก */
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
 }
 
 .home-banner img {
